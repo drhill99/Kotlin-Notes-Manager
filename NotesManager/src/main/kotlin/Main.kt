@@ -32,9 +32,10 @@ fun findWordInFile() {
                     testWord += line[i+firstLetterIndex]
                 }
 //                println(testWord)
-                if(testWord == wordToFind) {
+                if(testWord == wordToFind && line[firstLetterIndex - 1] == ' ') {
 //                    println("found $wordToFind")
-                    println("line containing $wordToFind : $line")
+                    val lineNumber = fileAsStrings.indexOf(line) + 1
+                    println("line: $lineNumber $line")
                     // break the inner loop if a line containing the word is found.
                     break@innerLoop
                 }
@@ -94,14 +95,6 @@ fun readFileAsLines(): List<String> {
     val fileName = readln()
     val path = "text_files/$fileName"
     val fileContents = File(path).readLines()
-//    for(line in fileContents) {
-//        println(line)
-//        for(word in line) {
-//            println(word)
-//
-//        }
-////        println(line)
-//    }
     return fileContents
 }
 
@@ -140,19 +133,5 @@ fun main(args: Array<String>) {
         }
 
     } while(userMenuInput != 0)
-
-
-
-//    print("Enter a file name, not including the extension: ")
-//    val fileName = readln()
-//    val filePath = "text_files/$fileName.txt"
-//
-//    print("Enter a string:")
-//    val userInputString = readln()
-////    println(userInputString)
-//    val file = File(filePath)
-
-
-
 
 }
