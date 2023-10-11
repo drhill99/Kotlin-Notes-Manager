@@ -6,43 +6,109 @@ import java.nio.file.StandardOpenOption
 
 
 fun createFile(): File {
+    val inputReader = Scanner(System.`in`)
     println("Creating a new file.\n")
     print("Enter a file name:")
     val fileName = readln()
     val filePath ="text_files/$fileName.txt"
     val file = File(filePath)
     writeToFile(file)
+    print("new line?: ")
+    val userLoopInput = inputReader.next()
+    var loopInput = userLoopInput[0]
+    while(loopInput.equals('y', ignoreCase = true)){
+        appendToFile("$fileName.txt")
+        print("new line?: ")
+        val userLoopInput2 = inputReader.next()
+        loopInput = userLoopInput2[0]
+    }
+
     return file
 }
 
+//fun findWordInFile() {
+//    val fileAsStrings = readFileAsLines()
+//    print("Enter word to find: ")
+//    val wordToFind:String = readln()
+//    outerLoop@ for(line in fileAsStrings) {
+//        println("current line: $line") // test code
+//        var firstLetterIndex = -1
+//        innerLoop@ for(letter in line) {
+//            print("ltr: $letter") // test code
+//            var testWord: String = ""
+//            firstLetterIndex = line.indexOf(letter)
+//            println(" index: $firstLetterIndex")
+//            if(letter == wordToFind[0]) {
+//                val checkedLetter = wordToFind[0]
+//                println("found $checkedLetter")
+////                 println(line)
+////                println("first letter index: $firstLetterIndex")
+//
+//                for(i in wordToFind.indices){
+//                    val letterIndex = i + firstLetterIndex
+////                    println("letterIndex: $letterIndex") // test code
+////                    val lineLength = line.length
+////                    println("line.length: $lineLength")
+//                    if(letterIndex < line.length){
+//                        testWord += line[i+firstLetterIndex]
+//                    }
+//
+//                    print("testWord: $testWord ") // test code
+//                }
+//                println("testWord: $testWord") // test code
+//                if(testWord == wordToFind && line[firstLetterIndex - 1] == ' ') {
+//                    println("found $wordToFind")
+//                    val lineNumber = fileAsStrings.indexOf(line) + 1
+//                    println("line: $lineNumber $line")
+//                    // break the inner loop if a line containing the word is found.
+//                    break@innerLoop
+//                }
+//            } else {
+//                testWord = ""
+//                firstLetterIndex = -1
+//            }
+//        }
+//    }
+//}
 fun findWordInFile() {
     val fileAsStrings = readFileAsLines()
     print("Enter word to find: ")
-    val wordToFind:String = readln()
-    outerLoop@ for(line in fileAsStrings) {
-        innerLoop@ for(letter in line) {
-            if(letter == wordToFind[0]) {
-                val checkedLetter = wordToFind[0]
-//                println("found $checkedLetter")
-                // println(line)
-                var testWord: String = ""
-                val firstLetterIndex = line.indexOf(letter)
+    val wordToFind: String = readlnOrNull() ?: return
 
-                for(i in wordToFind.indices){
-                    testWord += line[i+firstLetterIndex]
+    outerLoop@ for ((lineNumber, line) in fileAsStrings.withIndex()) {
+//        println("Current line: $line") // Test code
+
+        innerLoop@ for (i in line.indices) {
+            if (i + wordToFind.length > line.length) {
+                // Skip if the remaining characters are less than the word length
+                continue@outerLoop
+            }
+
+            val testWord = line.substring(i, i + wordToFind.length)
+//            val remainingIndices = i + wordToFind.length // test code
+//            println("remaining indices: $remainingIndices") // test code
+//            val lineLength = line.length // test code
+//            println("line length: $lineLength") // test code
+            if ((i + wordToFind.length) < line.length) {
+                if (testWord == wordToFind && (i == 0 || line[i - 1] == ' ') && line[i + wordToFind.length] == ' ') {
+//                    println("Found $wordToFind")
+                    println("Line: ${lineNumber + 1} $line")
+                    // break the inner loop if the word is found early in the line
+                    break@innerLoop
                 }
-//                println(testWord)
-                if(testWord == wordToFind && line[firstLetterIndex - 1] == ' ') {
-//                    println("found $wordToFind")
-                    val lineNumber = fileAsStrings.indexOf(line) + 1
-                    println("line: $lineNumber $line")
-                    // break the inner loop if a line containing the word is found.
+            } else {
+                if (testWord == wordToFind && (i == 0 || line[i - 1] == ' ')) {
+
+                    println("Line: ${lineNumber + 1} $line")
+                    // break the inner loop if the word is found early in the line
                     break@innerLoop
                 }
             }
+
         }
     }
 }
+
 fun writeToFile(file: File) {
     print("input:")
     val userTextInput = readln()
@@ -60,11 +126,10 @@ fun writeToFile(file: File) {
     }
 }
 
-fun appendToFile(){
-    print("Enter file to write to: ")
-    val fileName = readln()
+fun appendToFile(fileName: String){
+    println(fileName)
     val path = "text_files/$fileName"
-    print("Enter new text: ")
+    print("> ")
     val userTextInput = readln()
     val newText = "\n" + userTextInput
     try {
@@ -94,15 +159,23 @@ fun readFileAsLines(): List<String> {
     print("Enter file to read from: ")
     val fileName = readln()
     val path = "text_files/$fileName"
-    val fileContents = File(path).readLines()
-    return fileContents
+    return File(path).readLines()
 }
 
+fun printFile() {
+    print("Enter file to read from: ")
+    val fileName = readln()
+    val path = "text_files/$fileName"
+    val fileContents = File(path).readLines()
+    for(line in fileContents) {
+        println(line)
+    }
+}
 
 fun main(args: Array<String>) {
     //TODO( implement the opening and appending to a file) DONE
-    //TODO( implement the opening and editing of a file)
-    //TODO( implement file reading)
+    //TODO( implement the opening and editing of a file) DONE
+    //TODO( implement file reading) DONE
     val userInputReader = Scanner(System.`in`)
     var openfiles: List<File> = emptyList()
     do {
@@ -114,24 +187,30 @@ fun main(args: Array<String>) {
         println("6. search a file for a word.")
         println("0. exit menu.")
         val userMenuInput = userInputReader.nextInt()
+        // create and write to new file
+        // TODO (research 'when' keyword)
         if (userMenuInput == 1) {
             val newFile = createFile()
             // add file to list
             openfiles = openfiles + newFile
-
+        // print list of files in memory
         } else if (userMenuInput == 2){
-            //TODO( fill out if statment)
             getListOfAllFiles()
+        // print list of open files
         } else if (userMenuInput == 3) {
             println(openfiles)
+        // append to existing file
         } else if (userMenuInput == 4) {
-            appendToFile()
+            print("Enter name of file: ")
+            val fileName = readln()
+            appendToFile(fileName)
+        // read contents of a file
         } else if (userMenuInput == 5) {
-            readFileAsLines()
+            printFile()
+        // word search a file
         } else if (userMenuInput == 6) {
             findWordInFile()
         }
-
     } while(userMenuInput != 0)
 
 }
