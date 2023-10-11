@@ -15,7 +15,33 @@ fun createFile(): File {
     return file
 }
 
+fun findWordInFile() {
+    val fileAsStrings = readFileAsLines()
+    print("Enter word to find: ")
+    val wordToFind:String = readln()
+    outerLoop@ for(line in fileAsStrings) {
+        innerLoop@ for(letter in line) {
+            if(letter == wordToFind[0]) {
+                val checkedLetter = wordToFind[0]
+//                println("found $checkedLetter")
+                // println(line)
+                var testWord: String = ""
+                val firstLetterIndex = line.indexOf(letter)
 
+                for(i in wordToFind.indices){
+                    testWord += line[i+firstLetterIndex]
+                }
+//                println(testWord)
+                if(testWord == wordToFind) {
+//                    println("found $wordToFind")
+                    println("line containing $wordToFind : $line")
+                    // break the inner loop if a line containing the word is found.
+                    break@innerLoop
+                }
+            }
+        }
+    }
+}
 fun writeToFile(file: File) {
     print("input:")
     val userTextInput = readln()
@@ -68,14 +94,14 @@ fun readFileAsLines(): List<String> {
     val fileName = readln()
     val path = "text_files/$fileName"
     val fileContents = File(path).readLines()
-    for(line in fileContents) {
-        println(line)
-        for(word in line) {
-            println(word)
-
-        }
+//    for(line in fileContents) {
 //        println(line)
-    }
+//        for(word in line) {
+//            println(word)
+//
+//        }
+////        println(line)
+//    }
     return fileContents
 }
 
@@ -92,6 +118,7 @@ fun main(args: Array<String>) {
         println("3. print list of open files.")
         println("4. Add to existing file.")
         println("5. read contents of a file.")
+        println("6. search a file for a word.")
         println("0. exit menu.")
         val userMenuInput = userInputReader.nextInt()
         if (userMenuInput == 1) {
@@ -108,6 +135,8 @@ fun main(args: Array<String>) {
             appendToFile()
         } else if (userMenuInput == 5) {
             readFileAsLines()
+        } else if (userMenuInput == 6) {
+            findWordInFile()
         }
 
     } while(userMenuInput != 0)
