@@ -2,8 +2,6 @@ import java.io.*
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.nio.file.StandardOpenOption
-import java.util.*
-
 
 fun createFile(fileName: String, directoryName: String) {
     println("Creating a new file.\n")
@@ -16,10 +14,9 @@ fun createFile(fileName: String, directoryName: String) {
         // create writer pointing at the desired file
         val writer = BufferedWriter(FileWriter(file))
         // write to the file
-        writer.write(userTextInput.toString())
+        writer.write(userTextInput)
         // kill the writer object
         writer.close()
-//        println("Text successfully saved to file")
     } catch (e: Exception) {
         e.printStackTrace()
     }
@@ -31,7 +28,7 @@ fun findWordInFile(fileName: String, wordToFind: String, directoryName: String) 
     if(getListOfAllFiles(directoryName, print=false).contains("$fileName.txt")){
         println("finding references to \"$wordToFind\".........")
         val fileAsStrings = readFileAsLines(fileName, directoryName)
-        var wordFound: Boolean = false
+        var wordFound = false
         outerLoop@ for ((lineNumber, line) in fileAsStrings.withIndex()) {
             innerLoop@ for (i in line.indices) {
                 if (i + wordToFind.length > line.length) {
@@ -56,7 +53,6 @@ fun findWordInFile(fileName: String, wordToFind: String, directoryName: String) 
                 }
             }
         }
-//        println("testword: $wordFound")
         if(!wordFound){
             println("No references to \"$wordToFind\" found.")
         }
@@ -72,7 +68,7 @@ fun findWordInDirectory(wordToFind: String, directoryName: String){
         val fileExtensionIndex = file.indexOf('.')
         val fileName = file.substring(0, fileExtensionIndex)
         print("In $fileName...")
-        findWordInFile(fileName, wordToFind, directoryName);
+        findWordInFile(fileName, wordToFind, directoryName)
     }
 
 }
@@ -137,7 +133,7 @@ fun parseInput(userCommandInput: String): Triple<String, String, String> {
     fun findNumSpaces(userCommandInput: String): List<Int> {
         var spaceIndexes: List<Int> = emptyList()
         for(char in userCommandInput) {
-            val charIndex = 0;
+            val charIndex = 0
             if(char == ' '){
                 spaceIndexes = spaceIndexes + charIndex
             }
@@ -165,7 +161,7 @@ fun parseInput(userCommandInput: String): Triple<String, String, String> {
 fun deleteFile(fileName: String) {
     val filePath = Paths.get("text_files/$fileName.txt")
     try {
-        val deleteResult = Files.deleteIfExists(filePath)
+//        val deleteResult = Files.deleteIfExists(filePath)
         println("$fileName deleted")
     } catch (e: IOException) {
         println("Deletion failed")
@@ -180,8 +176,49 @@ fun createDirectory(directoryName: String) {
         println("failed to create $directoryName directory")
     }
 }
+
+fun deleteDirectory(directoryName:String) {
+    if(directoryName == "text_files"){
+        println("cannot delete default directory")
+        return
+    }
+    if(directoryName == null) {
+        return
+    }
+    val fullPath = File(directoryName).absolutePath
+    println("checking for: $fullPath")
+    val dirToDel = File(fullPath)
+
+    if (!dirToDel.exists()) {
+        println("Directory does not exist")
+        return
+    }
+    val filesInDir = getListOfAllFiles(directoryName, print = false)
+    println("Directory exists")
+    if(filesInDir.isEmpty()){
+        try{
+            dirToDel.deleteRecursively()
+            println("directory deleted")
+        } catch (e: Exception){
+            e.printStackTrace()
+        }
+    } else {
+        println("You are about to delete a directory along with existing files.")
+        println("Do you wish to proceed? yes or no")
+        val delYorN = readlnOrNull()?.trim()?.lowercase()
+        when(delYorN){
+            "yes" -> try{
+                dirToDel.deleteRecursively()
+                println("directory deleted")
+            } catch (e: Exception){
+                e.printStackTrace()
+            }
+            "no" -> println("aborting directory delete")
+        }
+    }
+}
 fun menu(){
-    var currentDirectory:String = "text_files" // default directory
+    var currentDirectory = "text_files" // default directory
     val menuOptions:String = "menu options:\n" +
             " mkdir as \"file name(one word)\" = create the specified directory\n" +
             "         cd to \"directory name\" = change to specified direcory\n" +
@@ -190,8 +227,9 @@ fun menu(){
             "               read \"file name\" = print the contents of a file\n" +
             "            newfile \"file name\" = create new file\n" +
             "             append \"file name\" = add new lines of text to existing file\n" +
-            "             delete \"file name\" = delete the specified file\n" +
-            "                             ls = print list of all file names\n" +
+            "             deletefile \"file name\" = delete the specified file\n" +
+            "             deleteir \"directory Name\" = delete specified directory\n" +
+            "                        listall = print list of all file names\n" +
             "                           quit = exit program\n" +
             "                           help = display command options"
 
@@ -207,7 +245,15 @@ fun menu(){
             "read" -> printFile(fileName, currentDirectory)
             "find" -> findWordInFile(fileName, argument, currentDirectory)
             "findall" -> findWordInDirectory(argument, currentDirectory)
-            "rm" -> deleteFile(fileName)
+            "deletefile" -> deleteFile(fileName)
+            "deletedir" -> if (currentDirectory == fileName) {
+                                deleteDirectory(fileName)
+                            if(currentDirectory != "text_files") {
+                                println("Active directory deleted, switched to default directory")
+                            currentDirectory = "text_files"
+                            }
+            }
+
             "mkdir" -> createDirectory(argument)
             "cd" -> currentDirectory = argument
             "quit" -> break@mainLoop
@@ -215,8 +261,7 @@ fun menu(){
         }
     }
 }
-fun main(args: Array<String>) {
-
+fun main() {
     val textFilesDirectory = "text_files"
     val file = File(textFilesDirectory)
     if(file.isDirectory) {
@@ -226,14 +271,4 @@ fun main(args: Array<String>) {
         createDirectory(textFilesDirectory)
     }
     menu()
-    // TODO( implement the option to put a new file in any directory) DONE
-    //TODO( implement the opening and appending to a file) DONE
-    //TODO( implement the opening and editing of a file) DONE
-    //TODO( implement file reading) DONE
-    //TODO( add error handling) MOSTLY DONE
-    //TODO( hide the menu, add command to show the command options, a la linux command line) DONE
-    //TODO( implement command parsing ie: print test7. parse out the command and the filename) DONE
-    //TODO (research 'when' keyword) DONE
-
-
-}
+ }
