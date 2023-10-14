@@ -6,7 +6,7 @@ This project is a notes taking and management system. The program provides the u
 
 This project was built primarily as an exploration into the kotlin programming language, and attempts to highlight specific features of the kotlin language.
 
-[Software Demo Video](http://youtube.link.goes.here)
+[Software Demo Video](https://youtu.be/HTubaQbl7Rw)
 
 # Development Environment
 
