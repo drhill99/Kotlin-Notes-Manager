@@ -9,6 +9,7 @@ fun createFile(fileName: String, directoryName: String) {
     var filePath = "$directoryName/$fileName.txt" // initialize file path
     filePath = filePath.trim() // remove any whitespace
     val file = File(filePath) // create file object from file path
+    println("Directory")
     print("$directoryName/$fileName editing:>> ")
     val userTextInput = readln() // take user input to write text to file
     // try block writes to file. If this initial write is not done, then the file
@@ -113,6 +114,7 @@ fun appendToFile(fileName: String, directoryName: String){
     if(getListOfAllFiles(directoryName, print=false).contains("$fileName.txt")){
         val path = "$directoryName/$fileName.txt" // create filePath string
         while(true) { // while loop
+            println("Directory")
             print("$directoryName/$fileName editing:>> ")
             val userTextInput = readln() // read user input to string
                 // break the loop if the user enters quit, ignoring case
@@ -220,8 +222,8 @@ fun parseInput(userCommandInput: String): Triple<String, String, String> {
 }
 
     // take a fileName argument and delete it
-fun deleteFile(fileName: String) {
-    val filePath = Paths.get("text_files/$fileName.txt") // create filePath
+fun deleteFile(fileName: String, directoryName:String) {
+    val filePath = Paths.get("$directoryName/$fileName.txt") // create filePath
     try { // attempt to delete the specified file if it exists
         val deleteResult = Files.deleteIfExists(filePath)
         println("$fileName deleted")
@@ -291,21 +293,22 @@ fun menu(){
     var currentDirectory = "text_files" // default directory
         // menu command options string. prints once at start, and can be displayed with the help command
     val menuOptions:String = "menu options:\n" +
-            " mkdir as \"file name(one word)\" = create the specified directory\n" +
-            "         cd to \"directory name\" = change to specified directory\n" +
-            "        searchfile \"file name\" \"word\" = search for a key word in a specified file\n" +
-            "           searchdir as \"word\" = search the active directory for a key word\n" +
-            "               read \"file name\" = print the contents of a file\n" +
-            "            newfile \"file name\" = create new file\n" +
-            "             append \"file name\" = add new lines of text to existing file\n" +
-            "             deletefile \"file name\" = delete the specified file\n" +
-            "             deleteir \"directory Name\" = delete specified directory\n" +
-            "                        listall = print list of all file names\n" +
-            "                           quit = exit program\n" +
-            "                           help = display command options"
+            "  searchfile \"file name\" \"word\" = SEARCH FILE FOR A WORD \n" +
+            " mkdir as \"file name(one word)\" = CREATE DIRECTORY\n" +
+            "         cd to \"directory name\" = CHANGE DIRECTORY\n" +
+            "            searchdir as \"word\" = SEARCH FILES IN DIRECTORY FOR A WORD\n" +
+            "               read \"file name\" = PRINT CONTENTS OF A FILE\n" +
+            "            newfile \"file name\" = CREAT NEW FILE\n" +
+            "             append \"file name\" = APPEND TO FILE\n" +
+            "         deletefile \"file name\" = DELETE FILE\n" +
+            "     deletedir \"directory Name\" = DELETE DIRECTORY\n" +
+            "                        listall = PRINT LIST OF FILES IN DIRECTORY\n" +
+            "                           quit = EXIT PROGRAM or EXIT FILE EDITING\n" +
+            "                           help = DISPLAY COMMAND OPTIONS"
 
     println(menuOptions) // print menu command options
     mainLoop@ while(true) { // menu loop
+        print("Directory")
         print("\n$currentDirectory/menu >> ")
         val userCommandString = readlnOrNull()?.trim()?.lowercase()?: break // read in user input
             // parse user input string into command, fileName and argument strings
@@ -324,7 +327,7 @@ fun menu(){
                 // find a word in all files in a specified directory
             "searchdir" -> findWordInDirectory(argument, currentDirectory)
                 // delete a specified file
-            "deletefile" -> deleteFile(fileName)
+            "deletefile" -> deleteFile(fileName, currentDirectory)
                 // delete a specified directory
             "deletedir" -> try{
                                 deleteDirectory(fileName) // call to delete directory
