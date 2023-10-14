@@ -1,6 +1,0 @@
-Baeldung.com/kotlin
-programiz.com/kotlin-programming
-stackoverflow.com
-kotlinlang.org
-I hope to get a decent grade on this assignment
-more importantly I want to learn from this assignment
